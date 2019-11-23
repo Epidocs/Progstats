@@ -9,19 +9,36 @@ lwalkpath = len(walkpath)
 stats = {}
 odata = {}
 
-def process_files(root, dirname, filename, stats):
+with open(os.path.join(walkpath, 'homeworklist.json'), 'r') as file:
+	hwlist = json.load(file)
+
+for hw in hwlist:
+	ndir = os.path.join(walkpath, hw)
+	if not os.path.exists(ndir):
+		os.makedirs(ndir)
+
+def process_files(dir, filename):
+	print((dir, filename))
 	f, e = os.path.splitext(filename)
 	if e == '.csv' and f != "overall":
-		path = os.path.join(root, filename)
+		path = os.path.join(dir, filename)
 		promo = f.replace('s', '#')
 		
-		with open(path, "r") as file:
-			next(file) # Skip header row.
+		data = [None]
+		n = 1 # Dynamic length of data.
+		
+		with open(path, 'r', newline='') as file:
+			header = file.readline().rstrip().split(',') # Header (first row)
+			lheader = len(header)
+			for i in range(1, lheader):
+				hw = hwlist[i - 1]
+				npath = os.path.join(walkpath, hw, filename)  # walkpath/hw/promo.csv
+				with open(npath, 'w', newline='') as nfile:
+					wr = csv.writer(nfile)
+					wr.writerow(['Login', header[i]])
 			
-			data = [None]
-			n = 1 # Dynamic length of data.
 			for line in file:
-				parts = line.split(',')
+				parts = line.rstrip().split(',')
 				lparts = len(parts)
 				
 				for i in range(n, lparts): # Increase size of data, as needed.
@@ -29,38 +46,48 @@ def process_files(root, dirname, filename, stats):
 					n += 1
 				
 				for i in range(1, lparts): # Skip login column.
+					hw = hwlist[i - 1]
+					npath = os.path.join(walkpath, hw, filename)  # walkpath/hw/promo.csv
+					with open(npath, 'a', newline='') as file:
+						wr = csv.writer(file)
+						wr.writerow([parts[0], parts[i]])
+					
 					if parts[i] != "":
 						try: data[i].append(float(parts[i]))
 						except: pass
 		
-		final = data[n - 1]
-		
-		count = len(final)
-		avg = round(mean(final), 2)
-		med = round(median(final), 2)
-		mini = min(final)
-		maxi = max(final)
-		
-		if dirname not in stats:
-			stats[dirname] = [["Promotion", "Count", "Average", "Median", "Minimum", "Maximum"]]
-		
-		stats[dirname].append([promo, count, avg, med, mini, maxi])
-		
-		if promo not in odata:
-			odata[promo] = [[], [], [], [], []]
-		
-		odata[promo][0].append(count)
-		odata[promo][1].append(avg)
-		odata[promo][2].append(med)
-		odata[promo][3].append(mini)
-		odata[promo][4].append(maxi)
+		for i in range(1, n): # Skip login data (None)
+			dataset = data[i]
+			if not dataset: continue
+			hw = hwlist[i - 1]
+			
+			count = len(dataset)
+			avg = round(mean(dataset), 2)
+			med = round(median(dataset), 2)
+			mini = min(dataset)
+			maxi = max(dataset)
+			
+			if hw not in stats:
+				stats[hw] = [["Promotion", "Count", "Average", "Median", "Minimum", "Maximum"]]
+			
+			stats[hw].append([promo, count, avg, med, mini, maxi])
+			
+			if promo not in odata:
+				odata[promo] = [[], [], [], [], []]
+			
+			odata[promo][0].append(count)
+			odata[promo][1].append(avg)
+			odata[promo][2].append(med)
+			odata[promo][3].append(mini)
+			odata[promo][4].append(maxi)
 
 for root, dirs, files in os.walk(walkpath):
 	print((root, dirs, files))
 	dirname = root[lwalkpath:]
-	if dirname != "":
+	if dirname == "":
 		for filename in files:
-			process_files(root, dirname, filename, stats)
+			process_files(root, filename)
+		break
 
 
 stats[""] = [["Promotion", "Number of Homework", "Average Count", "Global Average", "Average Median", "Average Minimum", "Average Maximum"]]
@@ -79,17 +106,9 @@ for promo in sorted(odata):
 
 print(stats)
 
-hwlist = []
-for homework in sorted(stats):
-	if homework:
-		hwlist.append(homework)
-	
-	npath = os.path.join(walkpath, homework, 'overall.csv')
+for hw in stats:
+	npath = os.path.join(walkpath, hw, 'overall.csv')
 	with open(npath, 'w', newline='') as file:
 		wr = csv.writer(file)
-		for row in stats[homework]:
+		for row in stats[hw]:
 			wr.writerow(row)
-
-hpath = os.path.join(walkpath, 'homeworklist.json')
-with open(hpath, 'w', newline='') as file:
-	json.dump(hwlist, file)
