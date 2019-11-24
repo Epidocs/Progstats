@@ -18,11 +18,13 @@ for hw in hwlist:
 		os.makedirs(ndir)
 
 def process_files(dir, filename):
-	print((dir, filename))
+	# print((dir, filename))
 	f, e = os.path.splitext(filename)
 	if e == '.csv' and f != "overall":
 		path = os.path.join(dir, filename)
 		promo = f.replace('s', '#')
+		
+		print("Processing " + promo + "...")
 		
 		data = [None]
 		n = 1 # Dynamic length of data.
@@ -82,13 +84,14 @@ def process_files(dir, filename):
 			odata[promo][4].append(maxi)
 
 for root, dirs, files in os.walk(walkpath):
-	print((root, dirs, files))
+	# print((root, dirs, files))
 	dirname = root[lwalkpath:]
 	if dirname == "":
 		for filename in files:
 			process_files(root, filename)
 		break
 
+print("Finishing touches...")
 
 stats[""] = [["Promotion", "Number of Homework", "Average Count", "Global Average", "Average Median", "Average Minimum", "Average Maximum"]]
 
@@ -104,7 +107,7 @@ for promo in sorted(odata):
 	
 	stats[""].append([promo, count, avgcount, avgavg, avgmed, avgmini, avgmaxi])
 
-print(stats)
+print("Creating data files...")
 
 for hw in stats:
 	npath = os.path.join(walkpath, hw, 'overall.csv')
@@ -112,3 +115,5 @@ for hw in stats:
 		wr = csv.writer(file)
 		for row in stats[hw]:
 			wr.writerow(row)
+
+print("Done.")
