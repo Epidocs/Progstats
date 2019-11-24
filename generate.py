@@ -133,9 +133,11 @@ for hw in stats:
 print("Creating web pages for groups...")
 
 for group in groups:
-	with open(group + '.html', 'w') as file:
+	groupfile = group.replace('#', 's')
+	with open(groupfile + '.html', 'w') as file:
 		content = grptemplate
 		content = content.replace('##GROUP##', group)
+		content = content.replace('##DATA##', groupfile)
 		
 		file.write(content)
 
