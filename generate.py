@@ -1,6 +1,7 @@
 import os
 import csv
 import json
+from shutil import copyfile
 from statistics import mean, median
 
 walkpath = "_data/"
@@ -9,11 +10,14 @@ lwalkpath = len(walkpath)
 stats = {}
 odata = {}
 
+with open("_templates/homework.html", 'r') as file:
+	template = file.read()
+
 with open(os.path.join(walkpath, 'homeworklist.json'), 'r') as file:
 	hwlist = json.load(file)
 
 for hw in hwlist:
-	ndir = os.path.join(walkpath, hw)
+	ndir = os.path.join(walkpath, hw['dirname'])
 	if not os.path.exists(ndir):
 		os.makedirs(ndir)
 
@@ -33,7 +37,7 @@ def process_files(dir, filename):
 			header = file.readline().rstrip().split(',') # Header (first row)
 			lheader = len(header)
 			for i in range(1, lheader):
-				hw = hwlist[i - 1]
+				hw = hwlist[i - 1]['dirname']
 				npath = os.path.join(walkpath, hw, filename)  # walkpath/hw/promo.csv
 				with open(npath, 'w', newline='') as nfile:
 					wr = csv.writer(nfile)
@@ -48,7 +52,7 @@ def process_files(dir, filename):
 					n += 1
 				
 				for i in range(1, lparts): # Skip login column.
-					hw = hwlist[i - 1]
+					hw = hwlist[i - 1]['dirname']
 					npath = os.path.join(walkpath, hw, filename)  # walkpath/hw/promo.csv
 					with open(npath, 'a', newline='') as file:
 						wr = csv.writer(file)
@@ -61,7 +65,7 @@ def process_files(dir, filename):
 		for i in range(1, n): # Skip login data (None)
 			dataset = data[i]
 			if not dataset: continue
-			hw = hwlist[i - 1]
+			hw = hwlist[i - 1]['dirname']
 			
 			count = len(dataset)
 			avg = round(mean(dataset), 2)
@@ -115,5 +119,16 @@ for hw in stats:
 		wr = csv.writer(file)
 		for row in stats[hw]:
 			wr.writerow(row)
+
+print("Creating web pages...")
+
+for hw in hwlist:
+	with open(hw['dirname'] + '.html', 'w') as file:
+		content = template
+		content = content.replace('##DIRNAME##', hw['dirname'])
+		content = content.replace('##NAME##', hw['name'])
+		content = content.replace('##DESCRIPTION##', hw['description'])
+		
+		file.write(content)
 
 print("Done.")
