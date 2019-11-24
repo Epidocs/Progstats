@@ -1,0 +1,5 @@
+<ul>
+	{% for group in include.data %}
+		<li><a href="{{ group | replace: '#', 's' }}">{{ group }}</a></li>
+	{% endfor %}
+</ul>

@@ -9,9 +9,12 @@ lwalkpath = len(walkpath)
 
 stats = {}
 odata = {}
+groups = []
 
+with open("_templates/group.html", 'r') as file:
+	grptemplate = file.read()
 with open("_templates/homework.html", 'r') as file:
-	template = file.read()
+	hwtemplate = file.read()
 
 with open(os.path.join(walkpath, 'homeworklist.json'), 'r') as file:
 	hwlist = json.load(file)
@@ -27,6 +30,7 @@ def process_files(dir, filename):
 	if e == '.csv' and f != "overall":
 		path = os.path.join(dir, filename)
 		promo = f.replace('s', '#')
+		groups.append(promo)
 		
 		print("Processing " + promo + "...")
 		
@@ -111,6 +115,12 @@ for promo in sorted(odata):
 	
 	stats[""].append([promo, count, avgcount, avgavg, avgmed, avgmini, avgmaxi])
 
+print("Listing groups...")
+
+npath = os.path.join(walkpath, 'groupslist.json')
+with open(npath, 'w', newline='') as file:
+	json.dump(groups, file)
+
 print("Creating data files...")
 
 for hw in stats:
@@ -120,11 +130,20 @@ for hw in stats:
 		for row in stats[hw]:
 			wr.writerow(row)
 
-print("Creating web pages...")
+print("Creating web pages for groups...")
+
+for group in groups:
+	with open(group + '.html', 'w') as file:
+		content = grptemplate
+		content = content.replace('##GROUP##', group)
+		
+		file.write(content)
+
+print("Creating web pages for stats...")
 
 for hw in hwlist:
 	with open(hw['dirname'] + '.html', 'w') as file:
-		content = template
+		content = hwtemplate
 		content = content.replace('##DIRNAME##', hw['dirname'])
 		content = content.replace('##NAME##', hw['name'])
 		content = content.replace('##DESCRIPTION##', hw['description'])
