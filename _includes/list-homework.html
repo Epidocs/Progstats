@@ -1,5 +1,5 @@
 <ul>
 	{% for list in include.data %}
-		<li><a href="{{ list | relative_url }}">{{ list | replace: '_', ' ' | capitalize }}</a></li>
+		<li><a href="{{ list.dirname }}">{{ list.name }}</a></li>
 	{% endfor %}
 </ul>
