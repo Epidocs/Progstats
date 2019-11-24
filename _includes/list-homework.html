@@ -1,5 +1,5 @@
-<ul>
+<p style="margin-top: -1rem">
 	{% for list in include.data %}
-		<li><a href="{{ list.dirname }}">{{ list.name }}</a></li>
+		<a href="{{ list.dirname }}" class="btn btn-info mt-3">{{ list.name }}</a>
 	{% endfor %}
-</ul>
+</p>

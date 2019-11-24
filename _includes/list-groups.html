@@ -1,5 +1,5 @@
-<ul>
+<p style="margin-top: -1rem">
 	{% for group in include.data %}
-		<li><a href="{{ group | replace: '#', 's' }}">{{ group }}</a></li>
+		<a href="{{ group | replace: '#', 's' }}" class="btn btn-info mt-3">{{ group }}</a>
 	{% endfor %}
-</ul>
+</p>
