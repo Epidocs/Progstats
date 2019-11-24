@@ -1,27 +1,21 @@
 ---
 layout: default
-title: Progstats
 breadcrumb:
 - Home
 ---
 
-<h1>{{ page.title }}</h1>
+<h1>{{ site.name }}</h1>
 
-<div class="alert alert-info">
-	<h4 class="alert-heading">This is a BETA project!</h4>
-	<p class="mb-0">Help by contributing to <a href="{{ site.github.repository_url }}">the open-source repository</a>! <i class="fas fa-heart fa-fw text-danger"></i></p>
-</div>
-
-<p>Stats of programming practicals at EPITA.</p>
-
-<p><i class="fas fa-info fa-fw"></i> Overall stats are calculated on overalls of all homework done by a promotion.</p>
+<p>{{ site.description }}</p>
 
 {% include table.html data = site.data.overall %}
 
-<h2>Stats on specific homework</h2>
+<p><i class="fas fa-info fa-fw"></i> These overall stats are calculated on overalls of all works done by a promotion (see details in the dedicated pages).</p>
+
+<h2>Stats on specific works</h2>
 
 {% include list-homework.html data = site.data.homeworklist %}
 
-<h2>Data on a group</h2>
+<h2>Datasets on groups</h2>
 
 {% include list-groups.html data = site.data.groupslist %}
