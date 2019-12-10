@@ -1,12 +1,13 @@
-# Algostats
+# Progstats
 
-Stats of algorithm homework at EPITA.
+Stats of programming practicals & exams at EPITA.
+
+Website hosted at [progstats.epidocs.eu](https://progstats.epidocs.eu/).
+
 
 ## Data
 
-Data is anonymized by default. Students can request _their_ data to be de-anonymized and made public (see instructions on the website).
-
-Nathalie's data has been removed from data sets, as her data is not representative of each promotion results.
+Data is anonymized by default. See the [Legal page](https://progstats.epidocs.eu/legal) for more information.
 
 
 ## Epidocs
